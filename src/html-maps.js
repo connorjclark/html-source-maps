@@ -1,5 +1,6 @@
 const chalk = require('chalk').default;
 const stripAnsi = require('strip-ansi').default;
+const wordWrap = require('word-wrap');
 
 // Looks like this.
 /*
@@ -46,8 +47,13 @@ function visualize(html, map, options) {
   const colors = ['#FF6347', '#2E8B57', '#1E90FF'];
   const files = [...new Set(map.ranges.map(range => range.callStack[0].file))];
 
+  const terminalWidth = process.stdout.columns;
+  if (!terminalWidth) throw new Error('bad terminal');
+  const leftPanelWidth = Math.round(terminalWidth / 2);
+
   let index = 0;
   let htmlVisualization = '';
+  const LINE_MARKER = '_______linemarker_______';
   for (let i = 0; i < map.ranges.length; i++) {
     const range = map.ranges[i];
     const partial = html.substr(index, range.length);
@@ -67,17 +73,16 @@ function visualize(html, map, options) {
       throw new Error(`unknown mode ${options.mode}`);
     }
 
-    if (i % 2 === 0) {
-      htmlVisualization += bg.white.bold(`${i}`);
-      htmlVisualization += bg(partial);
-    } else {
-      htmlVisualization += bg.white.bold(`${i}`);
-      htmlVisualization += bg(partial);
-    }
+    htmlVisualization += bg.white.bold(`${i}`);
+    htmlVisualization += partial.split('\n').map(line => {
+      // @ts-ignore
+      const escape = bg;
+      return wordWrap(line, {width: leftPanelWidth, indent: '', newline: '\n   ', escape});
+    }).join(LINE_MARKER);
   }
 
   // Add line numbers to HTML.
-  htmlVisualization = htmlVisualization.split('\n').map((line, i, lines) => {
+  htmlVisualization = htmlVisualization.split(LINE_MARKER).map((line, i, lines) => {
     const lineNo = i + 1;
     const paddingNeeded = String(`${lines.length + 1}`).length - String(lineNo).length;
     return ' '.repeat(paddingNeeded) + chalk.white(`${lineNo}`) + chalk.gray('|') + line;

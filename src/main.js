@@ -8,6 +8,7 @@ async function main() {
     posts: [
       {name: 'Clickbait title', body: 'filler filler ad ad filler filler filler ad'},
       {name: 'Which character from Pride and Prejudice are you?', body: 'answer: none of them'},
+      {name: `A ${'really '.repeat(20)}long title just to stress the word wrapping feature of the visualization`, body: 'lol'},
     ],
   });
 

@@ -11,6 +11,7 @@
     "chalk": "^2.4.2",
     "eslint": "^6.4.0",
     "strip-ansi": "^5.2.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.3",
+    "word-wrap": "^1.2.3"
   }
 }
