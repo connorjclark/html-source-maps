@@ -57,7 +57,7 @@ class TemplateEngine {
    */
   constructor(templateFolder) {
     this.templateFolder = templateFolder;
-    /** @type {Record<string, HtmlMaps.FragmentNode>} */
+    /** @type {Record<string, HtmlMaps.Template>} */
     this.cache = {};
   }
 
@@ -115,7 +115,7 @@ class TemplateEngine {
     // to from any point in the template tree. So the first step is creating
     // a minimal 'segment' tree, which can be rendered without special logic
     // via a simple DFS.
-    const segments = this._render(template.value, {
+    const segments = this._render(template.value.nodes, {
       blockSegments: new Map(),
       viewContext,
     });
@@ -162,7 +162,7 @@ class TemplateEngine {
       }
 
       if (node.type === 'template') {
-        renderSegments.push(...this._render([node.value.template], context));
+        renderSegments.push(...this._render(node.value.nodes, context));
         return;
       }
 
@@ -221,12 +221,19 @@ class TemplateEngine {
   async _getTemplate(templateName) {
     if (this.cache[templateName]) return this.cache[templateName];
     const templateContents = await fs.readFile(`${this.templateFolder}/${templateName}`, 'utf-8');
-    return this.cache[templateName] = await this._parse(templateContents);
+    return this.cache[templateName] = {
+      source: {line: 0, column: 0},
+      type: 'template',
+      value: {
+        name: templateName,
+        nodes: await this._parse(templateContents),
+      },
+    };
   }
 
   /**
    * @param {string} templateContents
-   * @return {Promise<HtmlMaps.Template>}
+   * @return {Promise<HtmlMaps.Node[]>}
    */
   async _parse(templateContents) {
     /** @type {HtmlMaps.Node[]} */
@@ -323,11 +330,7 @@ class TemplateEngine {
 
         nodes.push({
           source: {...position},
-          type: 'template',
-          value: {
-            templatePath: extendsTemplatePath,
-            template: await this._getTemplate(extendsTemplatePath),
-          },
+          ...await this._getTemplate(extendsTemplatePath),
         });
       } else if (internalText.startsWith('render ')) {
         const matchResult = internalText.match(/render (.*)/);
@@ -336,11 +339,7 @@ class TemplateEngine {
 
         nodes.push({
           source: {...position},
-          type: 'template',
-          value: {
-            templatePath: renderTemplatePath,
-            template: await this._getTemplate(renderTemplatePath),
-          },
+          ...await this._getTemplate(renderTemplatePath),
         });
       } else if (internalText === 'end') {
         // @ts-ignore
@@ -355,11 +354,7 @@ class TemplateEngine {
       i = nextCloseBracketIndex + 2;
     }
 
-    return {
-      source: {line: 0, column: 0},
-      type: 'fragment',
-      value: rootNodes,
-    };
+    return rootNodes;
   }
 }
 

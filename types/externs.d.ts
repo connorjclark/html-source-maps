@@ -1,6 +1,6 @@
 declare global {
   module HtmlMaps {
-    export type Template = FragmentNode;
+    export type Template = TemplateNode;
 
     export type Node = FragmentNode|LiteralNode|TemplateNode|BlockNode|PlaceholderNode|LoopNode;
 
@@ -24,8 +24,8 @@ declare global {
     interface TemplateNode extends BaseNode {
       type: 'template';
       value: {
-        templatePath: string;
-        template: Template;
+        name: string;
+        nodes: Node[];
       };
     }
 
