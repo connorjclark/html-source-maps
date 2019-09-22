@@ -213,10 +213,12 @@ class TemplateEngine {
       const nextCloseBracketIndex = templateContents.indexOf('%}', nextOpenBracketIndex);
       if (nextCloseBracketIndex === -1) throw new Error('unclosed {%');
       
-      nodes.push({
-        type: 'literal',
-        value: templateContents.substr(i, nextOpenBracketIndex - i),
-      });
+      if (nextOpenBracketIndex - i > 0) {
+        nodes.push({
+          type: 'literal',
+          value: templateContents.substr(i, nextOpenBracketIndex - i),
+        });
+      }
 
       const internalText = templateContents.substr(nextOpenBracketIndex + 3, nextCloseBracketIndex - nextOpenBracketIndex - 3).trim();
 
