@@ -136,7 +136,7 @@ function visualize(html, map, options) {
       ' '.repeat(1 + columnMaxes[0] - stripAnsi(rangeRepr[0]).length),
       rangeRepr[1],
       ' '.repeat(1 + columnMaxes[1] - stripAnsi(rangeRepr[1]).length),
-      rangeRepr[2],
+      rangeRepr.slice(2).join('\t'),
     ].join(''));
   }
 
