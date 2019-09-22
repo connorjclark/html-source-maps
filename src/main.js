@@ -13,7 +13,7 @@ async function main() {
   });
 
   if (process.env.DEBUG) {
-    visualize(text, map, {mode: process.env.MODE || 'default'});
+    visualize(text, map, {mode: process.env.MODE || 'source'});
   } else {
     console.log(text);
   }
@@ -72,7 +72,7 @@ function visualize(html, map, options) {
     index += range.length;
 
     let bg;
-    if (options.mode === 'default') {
+    if (options.mode === 'alternate') {
       bg = chalk.black.bgHex(colors[i % 2]);
     } else if (options.mode === 'source') {
       const colorIndex = files.indexOf(range.callStack[0].file);
@@ -131,14 +131,15 @@ function visualize(html, map, options) {
 
   for (let i = 0; i < Math.max(leftPanel.length, rightPanel.length); i++) {
     let line = '';
+    let paddingLength = longestLineLeftPanelLength + 1;
 
-    if (i <= leftPanel.length) {
+    if (i < leftPanel.length) {
       line += leftPanel[i];
-      const paddingLength = longestLineLeftPanelLength - stripAnsi(leftPanel[i]).length + 1;
-      line += ' '.repeat(paddingLength);
+      paddingLength -= stripAnsi(leftPanel[i]).length;
     }
-
+    
     if (i <= rightPanel.length) {
+      line += ' '.repeat(paddingLength);
       line += rightPanel[i];
     }
 

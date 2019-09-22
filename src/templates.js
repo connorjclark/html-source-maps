@@ -275,7 +275,7 @@ class TemplateEngine {
       if (nextCloseBracketIndex === -1) throw new Error('unclosed {%');
       
       const literalText = templateContents.substr(i, nextOpenBracketIndex - i);
-      if (literalText) {
+      if (literalText.trim()) {
         nodes.push({
           source: {file: templateName, ...position},
           type: 'literal',
@@ -292,7 +292,6 @@ class TemplateEngine {
       const internalTextMatch = textWithBrackets.match(/{%=?(.*)%}/);
       if (!internalTextMatch) throw new Error(`unexpected: ${internalTextMatch}`);
       const internalText = internalTextMatch[1].trim();
-      console.log(internalText);
 
       if (modifier === '=') {
         nodes.push({
