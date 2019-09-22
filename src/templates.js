@@ -12,17 +12,6 @@ const validModifiers = [
   '=',
 ];
 
-/**
- * @param {HtmlMaps.Node[]} nodes
- * @return {HtmlMaps.FragmentNode}
- */
-// function makeFragment(nodes) {
-//   return {
-//     type: 'fragment',
-//     value: nodes,
-//   }
-// }
-
 class TemplateEngine {
   /**
    * @param {string} templateFolder
@@ -83,7 +72,10 @@ class TemplateEngine {
           value: parsePath(internalText),
         });
       } else if (internalText.startsWith('for ')) {
-        const [_, bindingName, iterablePath] = internalText.match(/for (.*) in (.*)/);
+        const matchResult = internalText.match(/for (.*) in (.*)/);
+        if (!matchResult) throw new Error(`unexpected: ${internalText}`);
+        const [_, bindingName, iterablePath] = matchResult;
+
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
@@ -97,7 +89,10 @@ class TemplateEngine {
         stack.push(nodes);
         nodes = childNodes;
       } else if (internalText.startsWith('block ')) {
-        const [_, blockName] = internalText.match(/block (.*)/);
+        const matchResult = internalText.match(/block (.*)/);
+        if (!matchResult) throw new Error(`unexpected: ${internalText}`);
+        const [_, blockName] = matchResult;
+
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
@@ -112,7 +107,10 @@ class TemplateEngine {
       } else if (internalText.startsWith('extends ')) {
         if (i > 0) throw new Error('extends must be used in the beginning of a template');
 
-        const [_, extendsTemplatePath] = internalText.match(/extends (.*)/);
+        const matchResult = internalText.match(/extends (.*)/);
+        if (!matchResult) throw new Error(`unexpected: ${internalText}`);
+        const [_, extendsTemplatePath] = matchResult;
+
         nodes.push({
           type: 'extends',
           value: {

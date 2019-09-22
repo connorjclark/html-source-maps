@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint ."
+  },
   "devDependencies": {
     "@types/node": "*",
+    "eslint": "^6.4.0",
     "typescript": "^3.6.3"
   }
 }
