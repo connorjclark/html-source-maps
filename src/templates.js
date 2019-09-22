@@ -1,4 +1,29 @@
+/**
+ * @typedef RenderingContext
+ * @property {Map<string, HtmlMaps.BlockRenderSegment>} blockSegments
+ * @property {*} viewContext
+ */
+
 const fs = require('fs').promises;
+
+/**
+ * @param {...any} args
+ */
+function debug(...args) {
+  if (process.env.DEBUG) console.log(...args);
+}
+
+/**
+ * @param {*} context 
+ * @param {string[]} path
+ */
+function getValue(context, path) {
+  let cur = context;
+  for (const pathComponent of path) {
+    cur = cur[pathComponent];
+  }
+  return cur;
+}
 
 /**
  * @param {string} text
@@ -23,14 +48,143 @@ class TemplateEngine {
   }
 
   /**
-   * @param {string} templatePath
+   * @param {string} templateName
+   * @param {*} viewContext
+   * @return {Promise<string>}
+   */
+  async render(templateName, viewContext) {
+    const template = await this._getTemplate(templateName);
+
+    debug('====== template ======');
+    debug(JSON.stringify(template, null, 2));
+
+    let output = '';
+
+    /**
+     * @param {HtmlMaps.RenderSegment} segment
+     */
+    const walk = (segment) => {
+      if (segment.type === 'raw') {
+        output += segment.text;
+        return;
+      }
+
+      if (segment.type === 'block') {
+        segment.segments.map(walk).join('');
+        return;
+      }
+    }
+
+    // Rendering can't be done immediately, since blocks can be appended
+    // to from any point in the template tree. So the first step is creating
+    // a minimal 'segment' tree, which can be rendered without special logic
+    // via a simple DFS.
+    const segments = this._render(template.value, {
+      blockSegments: new Map(),
+      viewContext,
+    });
+    debug('====== segments ======');
+    debug(JSON.stringify(segments, null, 2));
+    segments.forEach(walk);
+
+    return output;
+  }
+
+  /**
+   * @param {HtmlMaps.Node[]} nodes
+   * @param {RenderingContext} context
+   * @return {HtmlMaps.RenderSegment[]}
+   */
+  _render(nodes, context) {
+    const {blockSegments, viewContext} = context;
+
+    /** @type {HtmlMaps.RenderSegment[]} */
+    const renderSegments = [];
+
+    /**
+     * @param {HtmlMaps.Node} node
+     */
+    const walk = (node) => {
+      if (node.type === 'fragment') {
+        node.value.forEach(walk);
+        return;
+      }
+
+      if (node.type === 'literal') {
+        renderSegments.push({
+          type: 'raw',
+          text: node.value,
+        });
+        return;
+      }
+
+      if (node.type === 'template') {
+        renderSegments.push(...this._render([node.value.template], context));
+        return;
+      }
+
+      if (node.type === 'block') {
+        const nodeSegments = this._render(node.value.nodes, context);
+        let blockSegment = blockSegments.get(node.value.name);
+      
+        if (blockSegment) {
+          if (blockSegment.containsDefault) {
+            blockSegment.containsDefault = false;
+            blockSegment.segments = [];
+          }
+          blockSegment.segments.push(...nodeSegments);
+        } else {
+          blockSegment = { type: 'block', containsDefault: true, segments: nodeSegments };
+          blockSegments.set(node.value.name, blockSegment);
+          renderSegments.push(blockSegment);
+        }
+
+        return;
+      }
+
+      if (node.type === 'placeholder') {
+        renderSegments.push({
+          type: 'raw',
+          text: getValue(viewContext, node.value),
+        });
+        return;
+      }
+
+      if (node.type === 'loop') {
+        const iterable = getValue(viewContext, node.value.iterablePath);
+        const childViewContext = {...viewContext};
+        for (const boundValue of iterable) {
+          childViewContext[node.value.bindingName] = boundValue;
+          const loopRenderContext = {
+            renderSegments,
+            blockSegments,
+            viewContext: childViewContext,
+          };
+          renderSegments.push(...this._render(node.value.nodes, loopRenderContext));
+        }
+        return;
+      }
+    }
+
+    nodes.forEach(walk);
+    return renderSegments;
+  }
+
+  /**
+   * @param {string} templateName
    * @return {Promise<HtmlMaps.Template>}
    */
-  async parse(templatePath) {
-    if (this.cache[templatePath]) return this.cache[templatePath];
+  async _getTemplate(templateName) {
+    if (this.cache[templateName]) return this.cache[templateName];
+    const templateContents = await fs.readFile(`${this.templateFolder}/${templateName}`, 'utf-8');
+    return this.cache[templateName] = await this._parse(templateContents);
+  }
 
-    const templateText = await fs.readFile(`${this.templateFolder}/${templatePath}`, 'utf-8');
-
+  /**
+   * @param {string} templateContents
+   * @return {Promise<HtmlMaps.Template>}
+   */
+  async _parse(templateContents) {
     /** @type {HtmlMaps.Node[]} */
     const rootNodes = [];
     let i = 0;
@@ -42,29 +196,29 @@ class TemplateEngine {
     /** @type {HtmlMaps.Node[][]} */
     let blockStack = [];
 
-    while (i < templateText.length) {
-      const nextOpenBracketIndex = templateText.indexOf('{%', i);
+    while (i < templateContents.length) {
+      const nextOpenBracketIndex = templateContents.indexOf('{%', i);
       if (nextOpenBracketIndex === -1) {
         // Done. The rest is a literal.
         nodes.push({
           type: 'literal',
-          value: templateText.substr(i),
+          value: templateContents.substr(i),
         });
         break;
       }
       
-      const modifier = templateText.charAt(nextOpenBracketIndex + 2);
+      const modifier = templateContents.charAt(nextOpenBracketIndex + 2);
       if (!validModifiers.includes(modifier) && modifier !== ' ') throw new Error(`unexpected modifier ${modifier}`);
 
-      const nextCloseBracketIndex = templateText.indexOf('%}', nextOpenBracketIndex);
+      const nextCloseBracketIndex = templateContents.indexOf('%}', nextOpenBracketIndex);
       if (nextCloseBracketIndex === -1) throw new Error('unclosed {%');
       
       nodes.push({
         type: 'literal',
-        value: templateText.substr(i, nextOpenBracketIndex - i),
+        value: templateContents.substr(i, nextOpenBracketIndex - i),
       });
 
-      const internalText = templateText.substr(nextOpenBracketIndex + 3, nextCloseBracketIndex - nextOpenBracketIndex - 3).trim();
+      const internalText = templateContents.substr(nextOpenBracketIndex + 3, nextCloseBracketIndex - nextOpenBracketIndex - 3).trim();
 
       if (modifier === '=') {
         nodes.push({
@@ -115,7 +269,7 @@ class TemplateEngine {
           type: 'template',
           value: {
             templatePath: extendsTemplatePath,
-            template: await this.parse(extendsTemplatePath),
+            template: await this._getTemplate(extendsTemplatePath),
           },
         });
       } else if (internalText.startsWith('render ')) {
@@ -127,7 +281,7 @@ class TemplateEngine {
           type: 'template',
           value: {
             templatePath: renderTemplatePath,
-            template: await this.parse(renderTemplatePath),
+            template: await this._getTemplate(renderTemplatePath),
           },
         });
       } else if (internalText === 'end') {
@@ -143,7 +297,7 @@ class TemplateEngine {
       i = nextCloseBracketIndex + 2;
     }
 
-    return this.cache[templatePath] = {
+    return {
       type: 'fragment',
       value: rootNodes,
     };
