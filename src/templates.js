@@ -54,10 +54,10 @@ const validModifiers = [
 
 class TemplateEngine {
   /**
-   * @param {string} templateFolder
+   * @param {{templateFolder: string}} options
    */
-  constructor(templateFolder) {
-    this.templateFolder = templateFolder;
+  constructor(options) {
+    this.templateFolder = options.templateFolder;
     /** @type {Record<string, HtmlMaps.Template>} */
     this.cache = {};
   }
@@ -245,17 +245,17 @@ class TemplateEngine {
   async _parse(templateName, templateContents) {
     /** @type {HtmlMaps.Node[]} */
     const rootNodes = [];
-    let i = 0;
     let nodes = rootNodes;
     
     /** @type {HtmlMaps.Node[][]} */
     let stack = [];
-
+    
     /** @type {HtmlMaps.Node[][]} */
     let blockStack = [];
-
+    
     let position = {line: 0, column: 0};
-
+    
+    let i = 0;
     while (i < templateContents.length) {
       const nextOpenBracketIndex = templateContents.indexOf('{%', i);
       if (nextOpenBracketIndex === -1) {
@@ -288,7 +288,6 @@ class TemplateEngine {
       const textWithBrackets = templateContents.substr(nextOpenBracketIndex, nextCloseBracketIndex - nextOpenBracketIndex + 2);
 
       // Remove the brackets and trim.
-      // const internalText = textWithBrackets.substr(3, textWithBrackets.length - 5).trim();
       const internalTextMatch = textWithBrackets.match(/{%=?(.*)%}/);
       if (!internalTextMatch) throw new Error(`unexpected: ${internalTextMatch}`);
       const internalText = internalTextMatch[1].trim();

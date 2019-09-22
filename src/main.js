@@ -3,7 +3,7 @@ const stripAnsi = require('strip-ansi').default;
 const TemplateEngine = require('./templates.js');
 
 async function main() {
-  const templateEngine = new TemplateEngine('views');
+  const templateEngine = new TemplateEngine({templateFolder: 'views'});
   const {map, text} = await templateEngine.render('posts.tpl', {
     lastUpdated: new Date().toDateString(),
     posts: [
@@ -12,11 +12,7 @@ async function main() {
     ],
   });
 
-  if (process.env.DEBUG) {
-    visualize(text, map, {mode: process.env.MODE || 'source'});
-  } else {
-    console.log(text);
-  }
+  visualize(text, map, {mode: process.env.MODE || 'source'});
 }
 
 // Looks like this.
