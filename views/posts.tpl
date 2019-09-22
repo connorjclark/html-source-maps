@@ -2,21 +2,15 @@
 
 {% block title %}Posts{% endblock %}
 
+{% block head %}
+  <script src="/posts.js"></script>
+{% endblock %}
+
 {% block content %}
-  {%= price %}
-  {%= names %}
+  <p>Last updated: {%= lastUpdated %}</p>
 
-  <ul>
-  {% for name in names %}
-    <li>
-      hi there
-      {%= name %}
-      blah
-
-      {% for item in items %}
-        {%= name %} and {%= item %}
-      {% end %}
-    </li>
+  <h1>Posts<h1>
+  {% for post in posts %}
+    {% render _post.tpl %}
   {% end %}
-  </ul>
 {% endblock %}

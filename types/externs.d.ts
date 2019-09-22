@@ -2,7 +2,7 @@ declare global {
   module HtmlMaps {
     export type Template = FragmentNode;
 
-    export type Node = FragmentNode|LiteralNode|ExtendsNode|BlockNode|PlaceholderNode|LoopNode;
+    export type Node = FragmentNode|LiteralNode|TemplateNode|BlockNode|PlaceholderNode|LoopNode;
 
     interface FragmentNode {
       type: 'fragment';
@@ -14,8 +14,8 @@ declare global {
       value: string;
     }
 
-    interface ExtendsNode {
-      type: 'extends';
+    interface TemplateNode {
+      type: 'template';
       value: {
         templatePath: string;
         template: Template;

@@ -13,9 +13,11 @@ async function main() {
   debug('====== template ======');
   debug(JSON.stringify(template, null, 2));
   const html = render(template.value, {
-    price: 100,
-    names: ['connor', 'clark'],
-    items: [1, 2],
+    lastUpdated: new Date().toDateString(),
+    posts: [
+      {name: 'Clickbait title', body: 'filler filler ad ad filler filler filler ad'},
+      {name: 'Which character from Pride and Prejudice are you?', body: 'answer: none of them'},
+    ],
   });
   console.log(html);
 }
@@ -27,7 +29,7 @@ async function main() {
 function getValue(context, path) {
   let cur = context;
   for (const pathComponent of path) {
-    cur = context[pathComponent];
+    cur = cur[pathComponent];
   }
   return cur;
 }
@@ -65,7 +67,7 @@ function _render(nodes, context) {
       return;
     }
 
-    if (node.type === 'extends') {
+    if (node.type === 'template') {
       renderSegments.push(..._render([node.value.template], context));
       return;
     }

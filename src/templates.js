@@ -18,7 +18,7 @@ class TemplateEngine {
    */
   constructor(templateFolder) {
     this.templateFolder = templateFolder;
-    /** @type {Record<string, HtmlMaps.Template>} */
+    /** @type {Record<string, HtmlMaps.FragmentNode>} */
     this.cache = {};
   }
 
@@ -112,10 +112,22 @@ class TemplateEngine {
         const [_, extendsTemplatePath] = matchResult;
 
         nodes.push({
-          type: 'extends',
+          type: 'template',
           value: {
             templatePath: extendsTemplatePath,
             template: await this.parse(extendsTemplatePath),
+          },
+        });
+      } else if (internalText.startsWith('render ')) {
+        const matchResult = internalText.match(/render (.*)/);
+        if (!matchResult) throw new Error(`unexpected: ${internalText}`);
+        const [_, renderTemplatePath] = matchResult;
+
+        nodes.push({
+          type: 'template',
+          value: {
+            templatePath: renderTemplatePath,
+            template: await this.parse(renderTemplatePath),
           },
         });
       } else if (internalText === 'end') {
