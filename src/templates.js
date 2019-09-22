@@ -163,6 +163,7 @@ class TemplateEngine {
       }
 
       if (node.type === 'template') {
+        debugger;
         templateStack.push(node.source);
         renderSegments.push(...this._render(node.value.nodes, context));
         templateStack.pop();
@@ -341,8 +342,8 @@ class TemplateEngine {
         const [_, extendsTemplatePath] = matchResult;
 
         nodes.push({
-          source: {...position},
           ...await this._getTemplate(extendsTemplatePath),
+          source: {file: templateName, ...position},
         });
       } else if (internalText.startsWith('render ')) {
         const matchResult = internalText.match(/render (.*)/);
@@ -350,8 +351,8 @@ class TemplateEngine {
         const [_, renderTemplatePath] = matchResult;
 
         nodes.push({
-          source: {...position},
           ...await this._getTemplate(renderTemplatePath),
+          source: {file: templateName, ...position},
         });
       } else if (internalText === 'end') {
         // @ts-ignore
