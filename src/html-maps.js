@@ -90,7 +90,7 @@ function visualize(html, map, options) {
       // 1:0 -> 3:10
       `${range.startLine + 1}:${range.startColumn} -> ${range.endLine + 1}:${range.endColumn}`,
       // callstack
-      range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`).join('\t'),
+      ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
     ];
   });
 
