@@ -54,6 +54,24 @@ declare global {
       segments: RenderSegment[];
     }
     type RenderSegment = TextRenderSegment | BlockRenderSegment;
+
+    // HTML Source Map
+    interface HtmlMap {
+      ranges: Range[];
+      frames: Frame[];
+    }
+
+    interface Range {
+      callStack: number[],
+      startLine: number;
+      startColumn: number;
+      endLine: number;
+      endColumn: number;
+    }
+
+    interface Frame {
+      
+    }
   }
 }
 

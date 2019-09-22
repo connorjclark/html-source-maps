@@ -50,7 +50,6 @@ class TemplateEngine {
   /**
    * @param {string} templateName
    * @param {*} viewContext
-   * @return {Promise<string>}
    */
   async render(templateName, viewContext) {
     const template = await this._getTemplate(templateName);
@@ -58,14 +57,38 @@ class TemplateEngine {
     debug('====== template ======');
     debug(JSON.stringify(template, null, 2));
 
-    let output = '';
+    /** @type {HtmlMaps.HtmlMap} */
+    const map = {
+      ranges: [],
+      frames: [],
+    };
+    
+    let text = '';
+    let line = 0;
+    let column = 0;
 
     /**
      * @param {HtmlMaps.RenderSegment} segment
      */
     const walk = (segment) => {
       if (segment.type === 'raw') {
-        output += segment.text;
+        text += segment.text;
+
+        const numLines = (segment.text.match(/\n/g) || []).length;
+        const endLine = line + numLines;
+        const endColumn = numLines ? segment.text.length - segment.text.lastIndexOf('\n') : column + segment.text.length;
+        
+        map.ranges.push({
+          callStack: [],
+          startLine: line,
+          startColumn: column,
+          endLine,
+          endColumn,
+          // length: segment.text.length,
+          // text: segment.text,
+        });
+        line = endLine;
+        column = endColumn;
         return;
       }
 
@@ -87,7 +110,13 @@ class TemplateEngine {
     debug(JSON.stringify(segments, null, 2));
     segments.forEach(walk);
 
-    return output;
+    debug('====== map ======');
+    debug(JSON.stringify(map, null, 2));
+
+    return {
+      text,
+      map,
+    };
   }
 
   /**
