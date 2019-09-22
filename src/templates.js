@@ -7,20 +7,52 @@ function parsePath(text) {
   return text.split('.');
 }
 
-class Templates {
+const validModifiers = [
+  // output
+  '=',
+];
+
+/**
+ * @param {HtmlMaps.Node[]} nodes
+ * @return {HtmlMaps.FragmentNode}
+ */
+// function makeFragment(nodes) {
+//   return {
+//     type: 'fragment',
+//     value: nodes,
+//   }
+// }
+
+class TemplateEngine {
+  /**
+   * @param {string} templateFolder
+   */
+  constructor(templateFolder) {
+    this.templateFolder = templateFolder;
+    /** @type {Record<string, HtmlMaps.Template>} */
+    this.cache = {};
+  }
+
   /**
    * @param {string} templatePath
    * @return {Promise<HtmlMaps.Template>}
    */
-  static async parse(templatePath) {
-    const templateText = await fs.readFile(templatePath, 'utf-8');
+  async parse(templatePath) {
+    if (this.cache[templatePath]) return this.cache[templatePath];
+
+    const templateText = await fs.readFile(`${this.templateFolder}/${templatePath}`, 'utf-8');
 
     /** @type {HtmlMaps.Node[]} */
     const rootNodes = [];
     let i = 0;
     let nodes = rootNodes;
+    
     /** @type {HtmlMaps.Node[][]} */
     let stack = [];
+
+    /** @type {HtmlMaps.Node[][]} */
+    let blockStack = [];
+
     while (i < templateText.length) {
       const nextOpenBracketIndex = templateText.indexOf('{%', i);
       if (nextOpenBracketIndex === -1) {
@@ -33,7 +65,7 @@ class Templates {
       }
       
       const modifier = templateText.charAt(nextOpenBracketIndex + 2);
-      if (modifier !== '=' && modifier !== ' ') throw new Error(`unexpected modifier ${modifier}`);
+      if (!validModifiers.includes(modifier) && modifier !== ' ') throw new Error(`unexpected modifier ${modifier}`);
 
       const nextCloseBracketIndex = templateText.indexOf('%}', nextOpenBracketIndex);
       if (nextCloseBracketIndex === -1) throw new Error('unclosed {%');
@@ -64,9 +96,36 @@ class Templates {
         });
         stack.push(nodes);
         nodes = childNodes;
+      } else if (internalText.startsWith('block ')) {
+        const [_, blockName] = internalText.match(/block (.*)/);
+        /** @type {HtmlMaps.Node[]} */
+        const childNodes = [];
+        nodes.push({
+          type: 'block',
+          value: {
+            name: blockName,
+            nodes: childNodes,
+          },
+        });
+        blockStack.push(nodes);
+        nodes = childNodes;
+      } else if (internalText.startsWith('extends ')) {
+        if (i > 0) throw new Error('extends must be used in the beginning of a template');
+
+        const [_, extendsTemplatePath] = internalText.match(/extends (.*)/);
+        nodes.push({
+          type: 'extends',
+          value: {
+            templatePath: extendsTemplatePath,
+            template: await this.parse(extendsTemplatePath),
+          },
+        });
       } else if (internalText === 'end') {
         // @ts-ignore
         nodes = stack.pop();
+      } else if (internalText === 'endblock') {
+        // @ts-ignore
+        nodes = blockStack.pop();
       } else {
         console.warn('unknown code', internalText);
       }
@@ -74,8 +133,11 @@ class Templates {
       i = nextCloseBracketIndex + 2;
     }
 
-    return rootNodes;
+    return this.cache[templatePath] = {
+      type: 'fragment',
+      value: rootNodes,
+    };
   }
 }
 
-module.exports = Templates;
+module.exports = TemplateEngine;

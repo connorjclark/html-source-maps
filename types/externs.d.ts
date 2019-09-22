@@ -1,12 +1,33 @@
 declare global {
   module HtmlMaps {
-    export type Template = Node[];
+    export type Template = FragmentNode;
 
-    export type Node = LiteralNode|PlaceholderNode|LoopNode;
+    export type Node = FragmentNode|LiteralNode|ExtendsNode|BlockNode|PlaceholderNode|LoopNode;
 
+    interface FragmentNode {
+      type: 'fragment';
+      value: Node[];
+    }
+    
     interface LiteralNode {
       type: 'literal';
       value: string;
+    }
+
+    interface ExtendsNode {
+      type: 'extends';
+      value: {
+        templatePath: string;
+        template: Template;
+      };
+    }
+
+    interface BlockNode {
+      type: 'block';
+      value: {
+        name: string;
+        nodes: Node[];
+      };
     }
 
     interface PlaceholderNode {
@@ -22,6 +43,17 @@ declare global {
         nodes: Node[];
       };
     }
+
+    interface TextRenderSegment {
+      type: 'raw';
+      text: string;
+    }
+    interface BlockRenderSegment {
+      type: 'block';
+      containsDefault: boolean;
+      segments: RenderSegment[];
+    }
+    type RenderSegment = TextRenderSegment | BlockRenderSegment;
   }
 }
 
