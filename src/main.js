@@ -78,8 +78,9 @@ function visualize(html, map) {
 
   // Add line numbers to HTML.
   htmlVisualization = htmlVisualization.split('\n').map((line, i, lines) => {
-    const paddingNeeded = String(`${lines.length}`).length - String(i).length;
-    return ' '.repeat(paddingNeeded) + chalk.white(`${i}`) + chalk.gray('|') + line;
+    const lineNo = i + 1;
+    const paddingNeeded = String(`${lines.length + 1}`).length - String(lineNo).length;
+    return ' '.repeat(paddingNeeded) + chalk.white(`${lineNo}`) + chalk.gray('|') + line;
   }).join('\n');
 
   const rangeVisualization = [];
@@ -94,9 +95,10 @@ function visualize(html, map) {
     // TODO: better aligning
     const rangeRepr = [
       chalk.bold.white(`${i}`),
-      `${range.startLine}:${range.startColumn}`,
+      `${range.startLine + 1}:${range.startColumn}`,
       '->',
-      `${range.endLine}:${range.endColumn}`,
+      `${range.endLine + 1}:${range.endColumn}`,
+      ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
     ].join('\t');
     rangeVisualization.push(rangeRepr);
   }

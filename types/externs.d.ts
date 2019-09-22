@@ -5,10 +5,7 @@ declare global {
     export type Node = FragmentNode|LiteralNode|TemplateNode|BlockNode|PlaceholderNode|LoopNode;
 
     interface BaseNode {
-      source: {
-        line: number;
-        column: number;
-      };
+      source: Frame;
     }
 
     interface FragmentNode extends BaseNode {
@@ -52,9 +49,9 @@ declare global {
     }
 
     interface TextRenderSegment {
+      callStack: Frame[];
       type: 'raw';
       text: string;
-      source: {line: number; column: number;}
     }
     interface BlockRenderSegment {
       type: 'block';
@@ -81,7 +78,7 @@ declare global {
     }
 
     interface Frame {
-      // file: string;
+      file: string;
       line: number;
       column: number;
     }

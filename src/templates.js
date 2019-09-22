@@ -1,6 +1,7 @@
 /**
  * @typedef RenderingContext
  * @property {Map<string, HtmlMaps.BlockRenderSegment>} blockSegments
+ * @property {HtmlMaps.Frame[]} templateStack
  * @property {*} viewContext
  */
 
@@ -86,7 +87,7 @@ class TemplateEngine {
     const walk = (segment) => {
       if (segment.type === 'raw') {
         const range = {
-          callStack: [segment.source],
+          callStack: segment.callStack,
           startLine: position.line,
           startColumn: position.column,
           endLine: 0,
@@ -117,6 +118,7 @@ class TemplateEngine {
     // via a simple DFS.
     const segments = this._render(template.value.nodes, {
       blockSegments: new Map(),
+      templateStack: [],
       viewContext,
     });
     debug('====== segments ======');
@@ -138,7 +140,7 @@ class TemplateEngine {
    * @return {HtmlMaps.RenderSegment[]}
    */
   _render(nodes, context) {
-    const {blockSegments, viewContext} = context;
+    const {blockSegments, templateStack, viewContext} = context;
 
     /** @type {HtmlMaps.RenderSegment[]} */
     const renderSegments = [];
@@ -154,7 +156,7 @@ class TemplateEngine {
 
       if (node.type === 'literal') {
         renderSegments.push({
-          source: node.source,
+          callStack: [node.source, ...templateStack],
           type: 'raw',
           text: node.value,
         });
@@ -162,7 +164,9 @@ class TemplateEngine {
       }
 
       if (node.type === 'template') {
+        templateStack.push(node.source);
         renderSegments.push(...this._render(node.value.nodes, context));
+        templateStack.pop();
         return;
       }
 
@@ -187,7 +191,7 @@ class TemplateEngine {
 
       if (node.type === 'placeholder') {
         renderSegments.push({
-          source: node.source,
+          callStack: [node.source, ...templateStack],
           type: 'raw',
           text: getValue(viewContext, node.value),
         });
@@ -200,8 +204,7 @@ class TemplateEngine {
         for (const boundValue of iterable) {
           childViewContext[node.value.bindingName] = boundValue;
           const loopRenderContext = {
-            renderSegments,
-            blockSegments,
+            ...context,
             viewContext: childViewContext,
           };
           renderSegments.push(...this._render(node.value.nodes, loopRenderContext));
@@ -222,20 +225,21 @@ class TemplateEngine {
     if (this.cache[templateName]) return this.cache[templateName];
     const templateContents = await fs.readFile(`${this.templateFolder}/${templateName}`, 'utf-8');
     return this.cache[templateName] = {
-      source: {line: 0, column: 0},
+      source: {file: templateName, line: 0, column: 0},
       type: 'template',
       value: {
         name: templateName,
-        nodes: await this._parse(templateContents),
+        nodes: await this._parse(templateName, templateContents),
       },
     };
   }
 
   /**
+   * @param {string} templateName
    * @param {string} templateContents
    * @return {Promise<HtmlMaps.Node[]>}
    */
-  async _parse(templateContents) {
+  async _parse(templateName, templateContents) {
     /** @type {HtmlMaps.Node[]} */
     const rootNodes = [];
     let i = 0;
@@ -254,7 +258,7 @@ class TemplateEngine {
       if (nextOpenBracketIndex === -1) {
         // Done. The rest is a literal.
         nodes.push({
-          source: {...position},
+          source: {file: templateName, ...position},
           type: 'literal',
           value: templateContents.substr(i),
         });
@@ -270,7 +274,7 @@ class TemplateEngine {
       const literalText = templateContents.substr(i, nextOpenBracketIndex - i);
       if (literalText) {
         nodes.push({
-          source: {...position},
+          source: {file: templateName, ...position},
           type: 'literal',
           value: templateContents.substr(i, nextOpenBracketIndex - i),
         });
@@ -282,7 +286,7 @@ class TemplateEngine {
 
       if (modifier === '=') {
         nodes.push({
-          source: {...position},
+          source: {file: templateName, ...position},
           type: 'placeholder',
           value: parsePath(internalText),
         });
@@ -294,7 +298,7 @@ class TemplateEngine {
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
-          source: {...position},
+          source: {file: templateName, ...position},
           type: 'loop',
           value: {
             bindingName,
@@ -312,7 +316,7 @@ class TemplateEngine {
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
-          source: {...position},
+          source: {file: templateName, ...position},
           type: 'block',
           value: {
             name: blockName,
