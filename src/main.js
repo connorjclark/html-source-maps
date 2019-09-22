@@ -12,7 +12,11 @@ async function main() {
     ],
   });
 
-  visualize(text, map, {mode: process.env.MODE || 'source'});
+  if (process.env.MODE === 'none') {
+    console.log(text);
+  } else {
+    visualize(text, map, {mode: process.env.MODE || 'source'});
+  }
 }
 
 // Looks like this.
