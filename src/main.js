@@ -131,8 +131,6 @@ function visualize(html, map, options) {
       `${range.startLine + 1}:${range.startColumn} -> ${range.endLine + 1}:${range.endColumn}`,
       ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
     ];
-    console.log(columnMaxes[0] - stripAnsi(rangeRepr[0]).length);
-    console.log(columnMaxes[1], rangeRepr[1], columnMaxes[1] - stripAnsi(rangeRepr[1]).length);
     rangeVisualization.push([
       rangeRepr[0],
       ' '.repeat(1 + columnMaxes[0] - stripAnsi(rangeRepr[0]).length),
