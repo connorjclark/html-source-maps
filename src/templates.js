@@ -32,6 +32,20 @@ function parsePath(text) {
   return text.split('.');
 }
 
+/**
+ * @param {{line: number, column: number}} position
+ * @param {string} text
+ */
+function advancePosition(position, text) {
+  const numLines = (text.match(/\n/g) || []).length;
+  if (numLines) {
+    position.line += numLines;
+    position.column = text.length - text.lastIndexOf('\n');
+  } else {
+    position.column += text.length;
+  }
+}
+
 const validModifiers = [
   // output
   '=',
@@ -64,34 +78,33 @@ class TemplateEngine {
     };
     
     let text = '';
-    let line = 0;
-    let column = 0;
+    const position = {line: 0, column: 0};
 
     /**
      * @param {HtmlMaps.RenderSegment} segment
      */
     const walk = (segment) => {
       if (segment.type === 'raw') {
-        text += segment.text;
+        const range = {
+          callStack: [segment.source],
+          startLine: position.line,
+          startColumn: position.column,
+          endLine: 0,
+          endColumn: 0,
+          // ...
+          length: segment.text.length,
+          text: segment.text,
+        }
+        advancePosition(position, segment.text);
+        range.endLine = position.line;
+        range.endColumn = position.column;        
+        map.ranges.push(range);
 
-        const numLines = (segment.text.match(/\n/g) || []).length;
-        const endLine = line + numLines;
-        const endColumn = numLines ? segment.text.length - segment.text.lastIndexOf('\n') : column + segment.text.length;
-        
-        map.ranges.push({
-          callStack: [],
-          startLine: line,
-          startColumn: column,
-          endLine,
-          endColumn,
-          // length: segment.text.length,
-          // text: segment.text,
-        });
-        line = endLine;
-        column = endColumn;
+        text += segment.text;
         return;
       }
 
+      // TODO: rename `fragment`.
       if (segment.type === 'block') {
         segment.segments.map(walk).join('');
         return;
@@ -141,6 +154,7 @@ class TemplateEngine {
 
       if (node.type === 'literal') {
         renderSegments.push({
+          source: node.source,
           type: 'raw',
           text: node.value,
         });
@@ -173,6 +187,7 @@ class TemplateEngine {
 
       if (node.type === 'placeholder') {
         renderSegments.push({
+          source: node.source,
           type: 'raw',
           text: getValue(viewContext, node.value),
         });
@@ -225,11 +240,14 @@ class TemplateEngine {
     /** @type {HtmlMaps.Node[][]} */
     let blockStack = [];
 
+    let position = {line: 0, column: 0};
+
     while (i < templateContents.length) {
       const nextOpenBracketIndex = templateContents.indexOf('{%', i);
       if (nextOpenBracketIndex === -1) {
         // Done. The rest is a literal.
         nodes.push({
+          source: {...position},
           type: 'literal',
           value: templateContents.substr(i),
         });
@@ -242,17 +260,22 @@ class TemplateEngine {
       const nextCloseBracketIndex = templateContents.indexOf('%}', nextOpenBracketIndex);
       if (nextCloseBracketIndex === -1) throw new Error('unclosed {%');
       
-      if (nextOpenBracketIndex - i > 0) {
+      const literalText = templateContents.substr(i, nextOpenBracketIndex - i);
+      if (literalText) {
         nodes.push({
+          source: {...position},
           type: 'literal',
           value: templateContents.substr(i, nextOpenBracketIndex - i),
         });
       }
 
+      advancePosition(position, literalText);
+
       const internalText = templateContents.substr(nextOpenBracketIndex + 3, nextCloseBracketIndex - nextOpenBracketIndex - 3).trim();
 
       if (modifier === '=') {
         nodes.push({
+          source: {...position},
           type: 'placeholder',
           value: parsePath(internalText),
         });
@@ -264,6 +287,7 @@ class TemplateEngine {
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
+          source: {...position},
           type: 'loop',
           value: {
             bindingName,
@@ -281,6 +305,7 @@ class TemplateEngine {
         /** @type {HtmlMaps.Node[]} */
         const childNodes = [];
         nodes.push({
+          source: {...position},
           type: 'block',
           value: {
             name: blockName,
@@ -297,6 +322,7 @@ class TemplateEngine {
         const [_, extendsTemplatePath] = matchResult;
 
         nodes.push({
+          source: {...position},
           type: 'template',
           value: {
             templatePath: extendsTemplatePath,
@@ -309,6 +335,7 @@ class TemplateEngine {
         const [_, renderTemplatePath] = matchResult;
 
         nodes.push({
+          source: {...position},
           type: 'template',
           value: {
             templatePath: renderTemplatePath,
@@ -329,6 +356,7 @@ class TemplateEngine {
     }
 
     return {
+      source: {line: 0, column: 0},
       type: 'fragment',
       value: rootNodes,
     };

@@ -4,17 +4,24 @@ declare global {
 
     export type Node = FragmentNode|LiteralNode|TemplateNode|BlockNode|PlaceholderNode|LoopNode;
 
-    interface FragmentNode {
+    interface BaseNode {
+      source: {
+        line: number;
+        column: number;
+      };
+    }
+
+    interface FragmentNode extends BaseNode {
       type: 'fragment';
       value: Node[];
     }
     
-    interface LiteralNode {
+    interface LiteralNode extends BaseNode {
       type: 'literal';
       value: string;
     }
 
-    interface TemplateNode {
+    interface TemplateNode extends BaseNode {
       type: 'template';
       value: {
         templatePath: string;
@@ -22,7 +29,7 @@ declare global {
       };
     }
 
-    interface BlockNode {
+    interface BlockNode extends BaseNode {
       type: 'block';
       value: {
         name: string;
@@ -30,12 +37,12 @@ declare global {
       };
     }
 
-    interface PlaceholderNode {
+    interface PlaceholderNode extends BaseNode {
       type: 'placeholder';
       value: string[];
     }
 
-    interface LoopNode {
+    interface LoopNode extends BaseNode {
       type: 'loop';
       value: {
         bindingName: string;
@@ -47,6 +54,7 @@ declare global {
     interface TextRenderSegment {
       type: 'raw';
       text: string;
+      source: {line: number; column: number;}
     }
     interface BlockRenderSegment {
       type: 'block';
@@ -62,15 +70,20 @@ declare global {
     }
 
     interface Range {
-      callStack: number[],
+      callStack: Frame[],
       startLine: number;
       startColumn: number;
       endLine: number;
       endColumn: number;
+
+      // TODO: should these exist?
+      length: number;
     }
 
     interface Frame {
-      
+      // file: string;
+      line: number;
+      column: number;
     }
   }
 }

@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/node": "*",
+    "chalk": "^2.4.2",
     "eslint": "^6.4.0",
     "typescript": "^3.6.3"
   }
