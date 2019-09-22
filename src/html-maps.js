@@ -49,11 +49,14 @@ function visualize(html, map, options) {
 
   const terminalWidth = process.stdout.columns;
   if (!terminalWidth) throw new Error('bad terminal');
-  const leftPanelWidth = Math.round(terminalWidth / 2);
+  const leftPanelWidth = Math.round(terminalWidth * 0.4);
 
   let index = 0;
   let htmlVisualization = '';
   const LINE_MARKER = '_______linemarker_______';
+  // (because of word wrapping)
+  const rangeIndexToHtmlVisualizationLine = new Map();
+  let lineCount = 0;
   for (let i = 0; i < map.ranges.length; i++) {
     const range = map.ranges[i];
     const partial = html.substr(index, range.length);
@@ -74,24 +77,19 @@ function visualize(html, map, options) {
     }
 
     htmlVisualization += bg.white.bold(`${i}`);
-    htmlVisualization += partial.split('\n').map(line => {
+    const wrappedLines = partial.split('\n').map(line => {
       // @ts-ignore
       const escape = bg;
       return wordWrap(line, {cut: true, indent: '', newline: '\n   ', width: leftPanelWidth, escape});
     }).join(LINE_MARKER);
-  }
+    htmlVisualization += wrappedLines;
 
-  const htmlVisualizationLines = htmlVisualization.split(LINE_MARKER);
-  // (because of word wrapping)
-  const htmlLineToHtmlVisualizationLine = new Map();
-  let lineCount = 0;
-  for (const htmlVisualizationLine of htmlVisualizationLines) {
-    htmlLineToHtmlVisualizationLine.set(htmlLineToHtmlVisualizationLine.size, lineCount);
-    lineCount += 1 + (htmlVisualizationLine.match(/\n/g) || []).length;
+    rangeIndexToHtmlVisualizationLine.set(rangeIndexToHtmlVisualizationLine.size, lineCount);
+    lineCount += (wrappedLines.match(new RegExp('\n|' + LINE_MARKER, 'g')) || []).length;
   }
 
   // Add line numbers to HTML.
-  htmlVisualization = htmlVisualizationLines.map((line, i, lines) => {
+  htmlVisualization = htmlVisualization.split(LINE_MARKER).map((line, i, lines) => {
     const lineNo = i + 1;
     const paddingNeeded = String(`${lines.length + 1}`).length - String(lineNo).length;
     return ' '.repeat(paddingNeeded) + chalk.white(`${lineNo}`) + chalk.gray('|') + line;
@@ -115,19 +113,18 @@ function visualize(html, map, options) {
   }, rangeVisualizationParts.map(_ => 0));
 
   const rangeVisualization = [];
-  for (let i = 0; i < map.ranges.length; i++) {
-    const range = map.ranges[i];
+  for (let i = 0; i < rangeVisualizationParts.length; i++) {
+    const parts = rangeVisualizationParts[i];
 
     // Add gaps to best align ranges with the HTML.
-    while (htmlLineToHtmlVisualizationLine.get(range.startLine) > rangeVisualization.length) {
+    while (rangeIndexToHtmlVisualizationLine.get(i) > rangeVisualization.length) {
       rangeVisualization.push('');
     }
 
-    const parts = rangeVisualizationParts[i];
     rangeVisualization.push(parts.map((part, i) => {
       return part + ' '.repeat(maxLengthForColumn[i] - stripAnsi(part).length);
     }).join(' '));
-  };
+  }
 
   const leftPanel = htmlVisualization.split('\n');
   const rightPanel = rangeVisualization;

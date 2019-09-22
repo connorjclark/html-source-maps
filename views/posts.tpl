@@ -1,6 +1,6 @@
 {% extends main.tpl %}
 
-{% block title %}PostPostPostPostPostPostPostPostPostPostPostPostPostPostPostsPostPostPostPostPostPostPostPostPostPostPostPostPostPostPostsPostPostPostPostPostPostPostPostPostPostPostPostPostPostPostsPostPostPostPostPostPostPostPostPostPostPostPostPostPostPosts{% endblock %}
+{% block title %}Posts{% endblock %}
 
 {% block head %}
   <script src="/posts.js"></script>
