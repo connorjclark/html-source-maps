@@ -38,7 +38,7 @@ const wordWrap = require('word-wrap');
 31|                                                                     27	30:1	->	31:1
 */
 /**
- * 
+ * Warning: run away ...
  * @param {string} html
  * @param {HtmlMaps.HtmlMap} map
  * @param {{mode: string}} options
@@ -77,12 +77,21 @@ function visualize(html, map, options) {
     htmlVisualization += partial.split('\n').map(line => {
       // @ts-ignore
       const escape = bg;
-      return wordWrap(line, {width: leftPanelWidth, indent: '', newline: '\n   ', escape});
+      return wordWrap(line, {cut: true, indent: '', newline: '\n   ', width: leftPanelWidth, escape});
     }).join(LINE_MARKER);
   }
 
+  const htmlVisualizationLines = htmlVisualization.split(LINE_MARKER);
+  // (because of word wrapping)
+  const htmlLineToHtmlVisualizationLine = new Map();
+  let lineCount = 0;
+  for (const htmlVisualizationLine of htmlVisualizationLines) {
+    htmlLineToHtmlVisualizationLine.set(htmlLineToHtmlVisualizationLine.size, lineCount);
+    lineCount += 1 + (htmlVisualizationLine.match(/\n/g) || []).length;
+  }
+
   // Add line numbers to HTML.
-  htmlVisualization = htmlVisualization.split(LINE_MARKER).map((line, i, lines) => {
+  htmlVisualization = htmlVisualizationLines.map((line, i, lines) => {
     const lineNo = i + 1;
     const paddingNeeded = String(`${lines.length + 1}`).length - String(lineNo).length;
     return ' '.repeat(paddingNeeded) + chalk.white(`${lineNo}`) + chalk.gray('|') + line;
@@ -105,12 +114,23 @@ function visualize(html, map, options) {
     });
   }, rangeVisualizationParts.map(_ => 0));
 
-  const leftPanel = htmlVisualization.split('\n');
-  const rightPanel = rangeVisualizationParts.map(parts => {
-    return parts.map((part, i) => {
+  const rangeVisualization = [];
+  for (let i = 0; i < map.ranges.length; i++) {
+    const range = map.ranges[i];
+
+    // Add gaps to best align ranges with the HTML.
+    while (htmlLineToHtmlVisualizationLine.get(range.startLine) > rangeVisualization.length) {
+      rangeVisualization.push('');
+    }
+
+    const parts = rangeVisualizationParts[i];
+    rangeVisualization.push(parts.map((part, i) => {
       return part + ' '.repeat(maxLengthForColumn[i] - stripAnsi(part).length);
-    }).join(' ');
-  });
+    }).join(' '));
+  };
+
+  const leftPanel = htmlVisualization.split('\n');
+  const rightPanel = rangeVisualization;
 
   // Combine the two 'panels'.
   const longestLineLeftPanelLength = leftPanel.reduce((max, line) => {
