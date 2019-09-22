@@ -77,9 +77,8 @@ class TemplateEngine {
       ranges: [],
       frames: [],
     };
-    
-    let text = '';
     const position = {line: 0, column: 0};
+    let text = '';
 
     /**
      * @param {HtmlMaps.RenderSegment} segment
@@ -181,7 +180,11 @@ class TemplateEngine {
           }
           blockSegment.segments.push(...nodeSegments);
         } else {
-          blockSegment = { type: 'block', containsDefault: true, segments: nodeSegments };
+          blockSegment = {
+            type: 'block',
+            containsDefault: true,
+            segments: nodeSegments,
+          };
           blockSegments.set(node.value.name, blockSegment);
           renderSegments.push(blockSegment);
         }
@@ -282,7 +285,14 @@ class TemplateEngine {
 
       advancePosition(position, literalText);
 
-      const internalText = templateContents.substr(nextOpenBracketIndex + 3, nextCloseBracketIndex - nextOpenBracketIndex - 3).trim();
+      const textWithBrackets = templateContents.substr(nextOpenBracketIndex, nextCloseBracketIndex - nextOpenBracketIndex + 2);
+
+      // Remove the brackets and trim.
+      // const internalText = textWithBrackets.substr(3, textWithBrackets.length - 5).trim();
+      const internalTextMatch = textWithBrackets.match(/{%=?(.*)%}/);
+      if (!internalTextMatch) throw new Error(`unexpected: ${internalTextMatch}`);
+      const internalText = internalTextMatch[1].trim();
+      console.log(internalText);
 
       if (modifier === '=') {
         nodes.push({
@@ -356,6 +366,7 @@ class TemplateEngine {
       }
 
       i = nextCloseBracketIndex + 2;
+      advancePosition(position, textWithBrackets);
     }
 
     return rootNodes;
