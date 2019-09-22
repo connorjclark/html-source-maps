@@ -102,6 +102,22 @@ function visualize(html, map, options) {
   }).join('\n');
 
   const rangeVisualization = [];
+  
+  // TODO: better aligning
+  // this is wild.
+  const columnMaxes = [
+    // index
+    String(map.ranges.length).length,
+    // 1:0 -> 3:10
+    0
+      + String(Math.max(...map.ranges.map(r => r.startLine)) + 1).length
+      + ':'.length
+      + String(Math.max(...map.ranges.map(r => r.startColumn))).length
+      + ' -> '.length
+      + String(Math.max(...map.ranges.map(r => r.endLine)) + 1).length
+      + ':'.length
+      + String(Math.max(...map.ranges.map(r => r.endColumn))).length,
+  ];
   for (let i = 0; i < map.ranges.length; i++) {
     const range = map.ranges[i];
 
@@ -110,15 +126,20 @@ function visualize(html, map, options) {
       rangeVisualization.push('');
     }
 
-    // TODO: better aligning
-    const rangeRepr = [
+    let rangeRepr = [
       chalk.bold.white(`${i}`),
-      `${range.startLine + 1}:${range.startColumn}`,
-      '->',
-      `${range.endLine + 1}:${range.endColumn}`,
+      `${range.startLine + 1}:${range.startColumn} -> ${range.endLine + 1}:${range.endColumn}`,
       ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
-    ].join('\t');
-    rangeVisualization.push(rangeRepr);
+    ];
+    console.log(columnMaxes[0] - stripAnsi(rangeRepr[0]).length);
+    console.log(columnMaxes[1], rangeRepr[1], columnMaxes[1] - stripAnsi(rangeRepr[1]).length);
+    rangeVisualization.push([
+      rangeRepr[0],
+      ' '.repeat(1 + columnMaxes[0] - stripAnsi(rangeRepr[0]).length),
+      rangeRepr[1],
+      ' '.repeat(1 + columnMaxes[1] - stripAnsi(rangeRepr[1]).length),
+      rangeRepr[2],
+    ].join(''));
   }
 
   const leftPanel = htmlVisualization.split('\n');
