@@ -163,7 +163,6 @@ class TemplateEngine {
       }
 
       if (node.type === 'template') {
-        debugger;
         templateStack.push(node.source);
         renderSegments.push(...this._render(node.value.nodes, context));
         templateStack.pop();

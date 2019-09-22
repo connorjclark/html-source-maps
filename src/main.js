@@ -100,48 +100,30 @@ function visualize(html, map, options) {
     const paddingNeeded = String(`${lines.length + 1}`).length - String(lineNo).length;
     return ' '.repeat(paddingNeeded) + chalk.white(`${lineNo}`) + chalk.gray('|') + line;
   }).join('\n');
-
-  const rangeVisualization = [];
   
-  // TODO: better aligning
-  // this is wild.
-  const columnMaxes = [
-    // index
-    String(map.ranges.length).length,
-    // 1:0 -> 3:10
-    0
-      + String(Math.max(...map.ranges.map(r => r.startLine)) + 1).length
-      + ':'.length
-      + String(Math.max(...map.ranges.map(r => r.startColumn))).length
-      + ' -> '.length
-      + String(Math.max(...map.ranges.map(r => r.endLine)) + 1).length
-      + ':'.length
-      + String(Math.max(...map.ranges.map(r => r.endColumn))).length,
-  ];
-  for (let i = 0; i < map.ranges.length; i++) {
-    const range = map.ranges[i];
-
-    // Force newlines if needed.
-    for (let j = rangeVisualization.length; j < range.startLine; j++) {
-      rangeVisualization.push('');
-    }
-
-    let rangeRepr = [
+  const rangeVisualizationParts = map.ranges.map((range, i) => {
+    return [
+      // index
       chalk.bold.white(`${i}`),
+      // 1:0 -> 3:10
       `${range.startLine + 1}:${range.startColumn} -> ${range.endLine + 1}:${range.endColumn}`,
-      ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
+      // callstack
+      range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`).join('\t'),
     ];
-    rangeVisualization.push([
-      rangeRepr[0],
-      ' '.repeat(1 + columnMaxes[0] - stripAnsi(rangeRepr[0]).length),
-      rangeRepr[1],
-      ' '.repeat(1 + columnMaxes[1] - stripAnsi(rangeRepr[1]).length),
-      rangeRepr.slice(2).join('\t'),
-    ].join(''));
-  }
+  });
+
+  const maxLengthForColumn = rangeVisualizationParts.reduce((max, parts) => {
+    return parts.map((part, i) => {
+      return Math.max(max[i], stripAnsi(part).length);
+    });
+  }, rangeVisualizationParts.map(_ => 0));
 
   const leftPanel = htmlVisualization.split('\n');
-  const rightPanel = rangeVisualization;
+  const rightPanel = rangeVisualizationParts.map(parts => {
+    return parts.map((part, i) => {
+      return part + ' '.repeat(maxLengthForColumn[i] - stripAnsi(part).length);
+    }).join(' ');
+  });
 
   // Combine the two 'panels'.
   const longestLineLeftPanelLength = leftPanel.reduce((max, line) => {
@@ -157,7 +139,7 @@ function visualize(html, map, options) {
       paddingLength -= stripAnsi(leftPanel[i]).length;
     }
     
-    if (i <= rightPanel.length) {
+    if (i < rightPanel.length) {
       line += ' '.repeat(paddingLength);
       line += rightPanel[i];
     }
