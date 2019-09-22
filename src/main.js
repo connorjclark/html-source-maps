@@ -13,7 +13,7 @@ async function main() {
   });
 
   if (process.env.DEBUG) {
-    visualize(text, map);
+    visualize(text, map, {mode: process.env.MODE || 'default'});
   } else {
     console.log(text);
   }
@@ -58,8 +58,12 @@ async function main() {
  * 
  * @param {string} html
  * @param {HtmlMaps.HtmlMap} map
+ * @param {{mode: string}} options
  */
-function visualize(html, map) {
+function visualize(html, map, options) {
+  const colors = ['#FF6347', '#2E8B57', '#1E90FF'];
+  const files = [...new Set(map.ranges.map(range => range.callStack[0].file))];
+
   let index = 0;
   let htmlVisualization = '';
   for (let i = 0; i < map.ranges.length; i++) {
@@ -67,12 +71,26 @@ function visualize(html, map) {
     const partial = html.substr(index, range.length);
     index += range.length;
 
-    if (i % 2 === 0) {
-      htmlVisualization += chalk.black.bgHex('#FF6347').white.bold(`${i}`);
-      htmlVisualization += chalk.black.bgHex('#FF6347')(partial);
+    let bg;
+    if (options.mode === 'default') {
+      bg = chalk.black.bgHex(colors[i % 2]);
+    } else if (options.mode === 'source') {
+      const colorIndex = files.indexOf(range.callStack[0].file);
+      if (colorIndex >= colors.length) {
+        throw new Error('need more colors');
+      }
+      const color = colors[colorIndex];
+      bg = chalk.black.bgHex(color);
     } else {
-      htmlVisualization += chalk.black.bgHex('#2E8B57').white.bold(`${i}`);
-      htmlVisualization += chalk.black.bgHex('#2E8B57')(partial);
+      throw new Error(`unknown mode ${options.mode}`);
+    }
+
+    if (i % 2 === 0) {
+      htmlVisualization += bg.white.bold(`${i}`);
+      htmlVisualization += bg(partial);
+    } else {
+      htmlVisualization += bg.white.bold(`${i}`);
+      htmlVisualization += bg(partial);
     }
   }
 
