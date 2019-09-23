@@ -53,12 +53,11 @@ declare global {
       type: 'raw';
       text: string;
     }
-    interface BlockRenderSegment {
-      type: 'block';
-      containsDefault: boolean;
+    interface FragmentRenderSegment {
+      type: 'fragment';
       segments: RenderSegment[];
     }
-    type RenderSegment = TextRenderSegment | BlockRenderSegment;
+    type RenderSegment = TextRenderSegment | FragmentRenderSegment;
 
     // HTML Source Map
     interface HtmlMap {

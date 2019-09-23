@@ -1,6 +1,6 @@
 /**
  * @typedef RenderingContext
- * @property {Map<string, HtmlMaps.BlockRenderSegment>} blockSegments
+ * @property {Map<string, {segment: HtmlMaps.FragmentRenderSegment, containsDefault: boolean}>} blockSegments
  * @property {HtmlMaps.Frame[]} templateStack
  * @property {*} viewContext
  */
@@ -104,8 +104,7 @@ class TemplateEngine {
         return;
       }
 
-      // TODO: rename `fragment`.
-      if (segment.type === 'block') {
+      if (segment.type === 'fragment') {
         segment.segments.map(walk).join('');
         return;
       }
@@ -171,22 +170,24 @@ class TemplateEngine {
 
       if (node.type === 'block') {
         const nodeSegments = this._render(node.value.nodes, context);
-        let blockSegment = blockSegments.get(node.value.name);
+        let blockSegmentData = blockSegments.get(node.value.name);
       
-        if (blockSegment) {
-          if (blockSegment.containsDefault) {
-            blockSegment.containsDefault = false;
-            blockSegment.segments = [];
+        if (blockSegmentData) {
+          if (blockSegmentData.containsDefault) {
+            blockSegmentData.containsDefault = false;
+            blockSegmentData.segment.segments = [];
           }
-          blockSegment.segments.push(...nodeSegments);
+          blockSegmentData.segment.segments.push(...nodeSegments);
         } else {
-          blockSegment = {
-            type: 'block',
+          blockSegmentData = {
             containsDefault: true,
-            segments: nodeSegments,
+            segment: {
+              type: 'fragment',
+              segments: nodeSegments,
+            },
           };
-          blockSegments.set(node.value.name, blockSegment);
-          renderSegments.push(blockSegment);
+          blockSegments.set(node.value.name, blockSegmentData);
+          renderSegments.push(blockSegmentData.segment);
         }
 
         return;
