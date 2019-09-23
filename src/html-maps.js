@@ -45,11 +45,10 @@ function visualize(html, map, options) {
   const terminalWidth = process.stdout.columns;
   if (!terminalWidth) throw new Error('bad terminal');
   const leftPanelWidth = Math.round(terminalWidth * 0.4);
+  const colors = ['#FF6347', '#2E8B57', '#1E90FF'];
+  const files = [...new Set(map.ranges.map(range => range.callStack[0].file))];
 
   function _renderHtml() {
-    const colors = ['#FF6347', '#2E8B57', '#1E90FF'];
-    const files = [...new Set(map.ranges.map(range => range.callStack[0].file))];
-
     let index = 0;
     let htmlVisualization = '';
     // TODO: refactor.
@@ -109,7 +108,15 @@ function visualize(html, map, options) {
         // 1:0 -> 3:10
         `${range.startLine + 1}:${range.startColumn} -> ${range.endLine + 1}:${range.endColumn}`,
         // callstack
-        ...range.callStack.map(frame => `${frame.file}:${frame.line + 1}:${frame.column}`),
+        ...range.callStack.map((frame, i) => {
+          const text = `${frame.file}:${frame.line + 1}:${frame.column}`;
+          if (i === 0 && options.mode === 'source') {
+            const colorIndex = files.indexOf(range.callStack[0].file);
+            return chalk.black.bgHex(colors[colorIndex])(text);
+          } else {
+            return text;
+          }
+        }),
       ];
     });
   
