@@ -6,6 +6,7 @@
  */
 
 const fs = require('fs').promises;
+const {FrameMap} = require('./html-maps.js');
 
 /**
  * @param {...any} args
@@ -72,10 +73,11 @@ class TemplateEngine {
     debug('====== template ======');
     debug(JSON.stringify(template, null, 2));
 
-    /** @type {HtmlMaps.HtmlMap} */
+    const frameMap = new FrameMap();
+    /** @type {HtmlMaps.HtmlMapJson} */
     const map = {
       ranges: [],
-      frames: [],
+      frames: frameMap.frames(),
     };
     const position = {line: 0, column: 0};
     let text = '';
@@ -86,7 +88,7 @@ class TemplateEngine {
     const walk = (segment) => {
       if (segment.type === 'raw') {
         const range = {
-          callStack: segment.callStack,
+          callStack: segment.callStack.map(frame => frameMap.add(frame)),
           startLine: position.line,
           startColumn: position.column,
           endLine: 0,

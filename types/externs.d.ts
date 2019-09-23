@@ -60,13 +60,13 @@ declare global {
     type RenderSegment = TextRenderSegment | FragmentRenderSegment;
 
     // HTML Source Map
-    interface HtmlMap {
+    interface HtmlMapJson {
       ranges: Range[];
       frames: Frame[];
     }
 
     interface Range {
-      callStack: Frame[],
+      callStack: number[],
       startLine: number;
       startColumn: number;
       endLine: number;

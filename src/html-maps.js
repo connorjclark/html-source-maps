@@ -2,6 +2,67 @@ const chalk = require('chalk').default;
 const stripAnsi = require('strip-ansi').default;
 const wordWrap = require('word-wrap');
 
+class FrameMap {
+  constructor() {
+    /** @type {Map<string, number>} */
+    this._frameToIdMap = new Map();
+    /** @type {HtmlMaps.Frame[]} */
+    this._frames = [];
+  }
+
+  frames() {
+    return this._frames;
+  }
+
+  /**
+   * @param {HtmlMaps.Frame} frame
+   */
+  add(frame) {
+    const key = this._key(frame);
+    let id = this._frameToIdMap.get(key);
+    if (typeof id === 'undefined') {
+      id = this._frames.length;
+      this._frameToIdMap.set(key, id);
+      this._frames.push(frame);
+    }
+    return id;
+  }
+
+  /**
+   * @param {HtmlMaps.Frame} frame
+   */
+  _key(frame) {
+    return `${frame.file}:${frame.line}:${frame.column}`;
+  }
+}
+
+class HtmlSourceMap {
+  /**
+   * @param {HtmlMaps.HtmlMapJson} mapJson
+  */
+  constructor(mapJson) {
+    this.ranges = mapJson.ranges.map(range => {
+      return {
+        ...range,
+        callStack: range.callStack.map(i => mapJson.frames[i]),
+      };
+    });
+    // this._frames = mapJson.frames;
+  }
+
+  /**
+   * @param {(range: Omit<HtmlMaps.Range, 'callStack'> & {callStack: HtmlMaps.Frame[]}) => void} fn
+   */
+  // forEachRange(fn) {
+  //   for (const range of this._ranges) {
+  //     fn({
+  //       ...range,
+  //       callStack: range.callStack.map(i => this._frames[i]),
+  //     });
+  //   }
+  // }
+}
+
 // Looks like this.
 /*
  1|0<html>                                                            0  1:0 -> 3:10    main.tpl:1:0    posts.tpl:1:0
@@ -38,10 +99,11 @@ const wordWrap = require('word-wrap');
 /**
  * Warning: run away ...
  * @param {string} html
- * @param {HtmlMaps.HtmlMap} map
+ * @param {HtmlMaps.HtmlMapJson} mapJson
  * @param {{mode: string}} options
  */
-function visualize(html, map, options) {
+function visualize(html, mapJson, options) {
+  const map = new HtmlSourceMap(mapJson);
   const terminalWidth = process.stdout.columns;
   if (!terminalWidth) throw new Error('bad terminal');
   const leftPanelWidth = Math.round(terminalWidth * 0.4);
@@ -175,5 +237,7 @@ function visualize(html, map, options) {
 }
 
 module.exports = {
+  FrameMap,
+  HtmlSourceMap,
   visualize,
 };
