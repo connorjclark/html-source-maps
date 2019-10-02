@@ -15,5 +15,8 @@
   "include": [
     "src/**/*.js",
     "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/server.js"
   ]
 }
