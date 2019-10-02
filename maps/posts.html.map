@@ -31,9 +31,9 @@
       "startLine": 2,
       "startColumn": 15,
       "endLine": 3,
-      "endColumn": 24,
-      "length": 32,
-      "text": "</title>\n  <link rel=\"map\" src=\""
+      "endColumn": 28,
+      "length": 36,
+      "text": "</title>\n  <link rel=\"htmlmap\" src=\""
     },
     {
       "callStack": [
@@ -41,9 +41,9 @@
         1
       ],
       "startLine": 3,
-      "startColumn": 24,
+      "startColumn": 28,
       "endLine": 3,
-      "endColumn": 43,
+      "endColumn": 47,
       "length": 19,
       "text": "maps/posts.html.map"
     },
@@ -53,7 +53,7 @@
         1
       ],
       "startLine": 3,
-      "startColumn": 43,
+      "startColumn": 47,
       "endLine": 4,
       "endColumn": 3,
       "length": 12,
@@ -102,7 +102,7 @@
       "endLine": 10,
       "endColumn": 35,
       "length": 15,
-      "text": "Tue Oct 01 2019"
+      "text": "Wed Oct 02 2019"
     },
     {
       "callStack": [
@@ -343,12 +343,12 @@
     {
       "file": "main.tpl",
       "line": 3,
-      "column": 24
+      "column": 28
     },
     {
       "file": "main.tpl",
       "line": 3,
-      "column": 43
+      "column": 47
     },
     {
       "file": "posts.tpl",
@@ -416,7 +416,7 @@
       "column": 15
     }
   ],
-  "html": "<html>\n<head>\n  <title>Posts</title>\n  <link rel=\"map\" src=\"maps/posts.html.map\"></link>\n  \n  <script src=\"/posts.js\"></script>\n\n</head>\n<body>\n  \n  <p>Last updated: Tue Oct 01 2019</p>\n\n  <h1>Posts<h1>\n  <h2>Clickbait title</h2>\n<div>filler filler ad ad filler filler filler ad</div>\n<h2>Which character from Pride and Prejudice are you?</h2>\n<div>answer: none of them</div>\n<h2>A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization</h2>\n<div>lol</div>\n\n</body>\n</html>\n\n",
+  "html": "<html>\n<head>\n  <title>Posts</title>\n  <link rel=\"htmlmap\" src=\"maps/posts.html.map\"></link>\n  \n  <script src=\"/posts.js\"></script>\n\n</head>\n<body>\n  \n  <p>Last updated: Wed Oct 02 2019</p>\n\n  <h1>Posts<h1>\n  <h2>Clickbait title</h2>\n<div>filler filler ad ad filler filler filler ad</div>\n<h2>Which character from Pride and Prejudice are you?</h2>\n<div>answer: none of them</div>\n<h2>A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization</h2>\n<div>lol</div>\n\n</body>\n</html>\n\n",
   "url": "/posts",
   "mapUrl": "maps/posts.html.map"
 }

@@ -29,18 +29,18 @@
       "startLine": 2,
       "startColumn": 23,
       "endLine": 3,
-      "endColumn": 24,
-      "length": 32,
-      "text": "</title>\n  <link rel=\"map\" src=\""
+      "endColumn": 28,
+      "length": 36,
+      "text": "</title>\n  <link rel=\"htmlmap\" src=\""
     },
     {
       "callStack": [
         3
       ],
       "startLine": 3,
-      "startColumn": 24,
+      "startColumn": 28,
       "endLine": 3,
-      "endColumn": 42,
+      "endColumn": 46,
       "length": 18,
       "text": "maps/root.html.map"
     },
@@ -49,7 +49,7 @@
         4
       ],
       "startLine": 3,
-      "startColumn": 42,
+      "startColumn": 46,
       "endLine": 4,
       "endColumn": 3,
       "length": 12,
@@ -108,12 +108,12 @@
     {
       "file": "main.tpl",
       "line": 3,
-      "column": 24
+      "column": 28
     },
     {
       "file": "main.tpl",
       "line": 3,
-      "column": 43
+      "column": 47
     },
     {
       "file": "main.tpl",
@@ -131,7 +131,7 @@
       "column": 51
     }
   ],
-  "html": "<html>\n<head>\n  <title>Default Title</title>\n  <link rel=\"map\" src=\"maps/root.html.map\"></link>\n  \n</head>\n<body>\n  Default Content\n</body>\n</html>\n",
+  "html": "<html>\n<head>\n  <title>Default Title</title>\n  <link rel=\"htmlmap\" src=\"maps/root.html.map\"></link>\n  \n</head>\n<body>\n  Default Content\n</body>\n</html>\n",
   "url": "/",
   "mapUrl": "maps/root.html.map"
 }
