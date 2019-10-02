@@ -1,6 +1,4 @@
 {
-  "url": "/",
-  "mapUrl": "maps/map.html.json",
   "ranges": [
     {
       "callStack": [
@@ -418,5 +416,7 @@
       "column": 15
     }
   ],
-  "html": "<html>\n<head>\n  <title>Posts</title>\n  <link rel=\"map\" src=\"maps/map.html.json\"></link>\n  \n  <script src=\"/posts.js\"></script>\n\n</head>\n<body>\n  \n  <p>Last updated: Tue Oct 01 2019</p>\n\n  <h1>Posts<h1>\n  <h2>Clickbait title</h2>\n<div>filler filler ad ad filler filler filler ad</div>\n<h2>Which character from Pride and Prejudice are you?</h2>\n<div>answer: none of them</div>\n<h2>A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization</h2>\n<div>lol</div>\n\n</body>\n</html>\n\n"
+  "html": "<html>\n<head>\n  <title>Posts</title>\n  <link rel=\"map\" src=\"maps/map.html.json\"></link>\n  \n  <script src=\"/posts.js\"></script>\n\n</head>\n<body>\n  \n  <p>Last updated: Tue Oct 01 2019</p>\n\n  <h1>Posts<h1>\n  <h2>Clickbait title</h2>\n<div>filler filler ad ad filler filler filler ad</div>\n<h2>Which character from Pride and Prejudice are you?</h2>\n<div>answer: none of them</div>\n<h2>A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization</h2>\n<div>lol</div>\n\n</body>\n</html>\n\n",
+  "url": "/posts",
+  "mapUrl": "maps/map.html.json"
 }

@@ -72,25 +72,27 @@ class TemplateEngine {
   }
 
   /**
+   * @param {*} rootContext
+   */
+  setRootContext(rootContext) {
+    this._rootContext = rootContext;
+  }
+
+  /**
    * @param {string} templateName
    * @param {*=} viewContext
    */
   async render(templateName, viewContext) {
-    if (!viewContext) viewContext = {};
+    viewContext = {...this._rootContext, ...(viewContext || {})};
+
     const template = await this._getTemplate(templateName);
 
     debug('====== template ======');
     debug(JSON.stringify(template, null, 2));
 
     const frameMap = new FrameMap();
-    // Very simplified. Real solution would need to randomize the name, and know how
-    // to save the file in some part of the filesystem, that's served via HTTP over a specific
-    // web root path.
-    const mapUrl = 'maps/map.html.json';
     /** @type {HtmlMaps.HtmlMapJson} */
     const map = {
-      url: '/', // TODO
-      mapUrl,
       ranges: [],
       frames: frameMap.frames(),
     };
@@ -127,10 +129,6 @@ class TemplateEngine {
       }
     }
 
-    // what???
-    // eslint-disable-next-line require-atomic-updates
-    viewContext.html_map_url = map.mapUrl;
-
     // Rendering can't be done immediately, since blocks can be appended
     // to from any point in the template tree. So the first step is creating
     // a minimal 'segment' tree, which can be rendered without special logic
@@ -149,8 +147,6 @@ class TemplateEngine {
 
     // Tack on the optional HTML property.
     map.html = text;
-
-    await fs.writeFile(mapUrl, JSON.stringify(map, null, 2));
 
     return {
       text,
