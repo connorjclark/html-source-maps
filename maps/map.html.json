@@ -1,0 +1,422 @@
+{
+  "url": "/",
+  "mapUrl": "maps/map.html.json",
+  "ranges": [
+    {
+      "callStack": [
+        0,
+        1
+      ],
+      "startLine": 0,
+      "startColumn": 0,
+      "endLine": 2,
+      "endColumn": 10,
+      "length": 23,
+      "text": "<html>\n<head>\n  <title>"
+    },
+    {
+      "callStack": [
+        2
+      ],
+      "startLine": 2,
+      "startColumn": 10,
+      "endLine": 2,
+      "endColumn": 15,
+      "length": 5,
+      "text": "Posts"
+    },
+    {
+      "callStack": [
+        3,
+        1
+      ],
+      "startLine": 2,
+      "startColumn": 15,
+      "endLine": 3,
+      "endColumn": 24,
+      "length": 32,
+      "text": "</title>\n  <link rel=\"map\" src=\""
+    },
+    {
+      "callStack": [
+        4,
+        1
+      ],
+      "startLine": 3,
+      "startColumn": 24,
+      "endLine": 3,
+      "endColumn": 42,
+      "length": 18,
+      "text": "maps/map.html.json"
+    },
+    {
+      "callStack": [
+        5,
+        1
+      ],
+      "startLine": 3,
+      "startColumn": 42,
+      "endLine": 4,
+      "endColumn": 3,
+      "length": 12,
+      "text": "\"></link>\n  "
+    },
+    {
+      "callStack": [
+        6
+      ],
+      "startLine": 4,
+      "startColumn": 3,
+      "endLine": 6,
+      "endColumn": 1,
+      "length": 37,
+      "text": "\n  <script src=\"/posts.js\"></script>\n"
+    },
+    {
+      "callStack": [
+        7,
+        1
+      ],
+      "startLine": 6,
+      "startColumn": 1,
+      "endLine": 9,
+      "endColumn": 3,
+      "length": 18,
+      "text": "\n</head>\n<body>\n  "
+    },
+    {
+      "callStack": [
+        8
+      ],
+      "startLine": 9,
+      "startColumn": 3,
+      "endLine": 10,
+      "endColumn": 20,
+      "length": 20,
+      "text": "\n  <p>Last updated: "
+    },
+    {
+      "callStack": [
+        9
+      ],
+      "startLine": 10,
+      "startColumn": 20,
+      "endLine": 10,
+      "endColumn": 35,
+      "length": 15,
+      "text": "Tue Oct 01 2019"
+    },
+    {
+      "callStack": [
+        10
+      ],
+      "startLine": 10,
+      "startColumn": 35,
+      "endLine": 13,
+      "endColumn": 3,
+      "length": 24,
+      "text": "</p>\n\n  <h1>Posts<h1>\n  "
+    },
+    {
+      "callStack": [
+        11,
+        12
+      ],
+      "startLine": 13,
+      "startColumn": 3,
+      "endLine": 13,
+      "endColumn": 7,
+      "length": 4,
+      "text": "<h2>"
+    },
+    {
+      "callStack": [
+        13,
+        12
+      ],
+      "startLine": 13,
+      "startColumn": 7,
+      "endLine": 13,
+      "endColumn": 22,
+      "length": 15,
+      "text": "Clickbait title"
+    },
+    {
+      "callStack": [
+        14,
+        12
+      ],
+      "startLine": 13,
+      "startColumn": 22,
+      "endLine": 14,
+      "endColumn": 6,
+      "length": 11,
+      "text": "</h2>\n<div>"
+    },
+    {
+      "callStack": [
+        15,
+        12
+      ],
+      "startLine": 14,
+      "startColumn": 6,
+      "endLine": 14,
+      "endColumn": 49,
+      "length": 43,
+      "text": "filler filler ad ad filler filler filler ad"
+    },
+    {
+      "callStack": [
+        16,
+        12
+      ],
+      "startLine": 14,
+      "startColumn": 49,
+      "endLine": 15,
+      "endColumn": 1,
+      "length": 7,
+      "text": "</div>\n"
+    },
+    {
+      "callStack": [
+        11,
+        12
+      ],
+      "startLine": 15,
+      "startColumn": 1,
+      "endLine": 15,
+      "endColumn": 5,
+      "length": 4,
+      "text": "<h2>"
+    },
+    {
+      "callStack": [
+        13,
+        12
+      ],
+      "startLine": 15,
+      "startColumn": 5,
+      "endLine": 15,
+      "endColumn": 54,
+      "length": 49,
+      "text": "Which character from Pride and Prejudice are you?"
+    },
+    {
+      "callStack": [
+        14,
+        12
+      ],
+      "startLine": 15,
+      "startColumn": 54,
+      "endLine": 16,
+      "endColumn": 6,
+      "length": 11,
+      "text": "</h2>\n<div>"
+    },
+    {
+      "callStack": [
+        15,
+        12
+      ],
+      "startLine": 16,
+      "startColumn": 6,
+      "endLine": 16,
+      "endColumn": 26,
+      "length": 20,
+      "text": "answer: none of them"
+    },
+    {
+      "callStack": [
+        16,
+        12
+      ],
+      "startLine": 16,
+      "startColumn": 26,
+      "endLine": 17,
+      "endColumn": 1,
+      "length": 7,
+      "text": "</div>\n"
+    },
+    {
+      "callStack": [
+        11,
+        12
+      ],
+      "startLine": 17,
+      "startColumn": 1,
+      "endLine": 17,
+      "endColumn": 5,
+      "length": 4,
+      "text": "<h2>"
+    },
+    {
+      "callStack": [
+        13,
+        12
+      ],
+      "startLine": 17,
+      "startColumn": 5,
+      "endLine": 17,
+      "endColumn": 219,
+      "length": 214,
+      "text": "A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization"
+    },
+    {
+      "callStack": [
+        14,
+        12
+      ],
+      "startLine": 17,
+      "startColumn": 219,
+      "endLine": 18,
+      "endColumn": 6,
+      "length": 11,
+      "text": "</h2>\n<div>"
+    },
+    {
+      "callStack": [
+        15,
+        12
+      ],
+      "startLine": 18,
+      "startColumn": 6,
+      "endLine": 18,
+      "endColumn": 9,
+      "length": 3,
+      "text": "lol"
+    },
+    {
+      "callStack": [
+        16,
+        12
+      ],
+      "startLine": 18,
+      "startColumn": 9,
+      "endLine": 19,
+      "endColumn": 1,
+      "length": 7,
+      "text": "</div>\n"
+    },
+    {
+      "callStack": [
+        17,
+        1
+      ],
+      "startLine": 19,
+      "startColumn": 1,
+      "endLine": 22,
+      "endColumn": 1,
+      "length": 17,
+      "text": "\n</body>\n</html>\n"
+    },
+    {
+      "callStack": [
+        18
+      ],
+      "startLine": 22,
+      "startColumn": 1,
+      "endLine": 23,
+      "endColumn": 1,
+      "length": 1,
+      "text": "\n"
+    }
+  ],
+  "frames": [
+    {
+      "file": "main.tpl",
+      "line": 0,
+      "column": 0
+    },
+    {
+      "file": "posts.tpl",
+      "line": 0,
+      "column": 0
+    },
+    {
+      "file": "posts.tpl",
+      "line": 2,
+      "column": 18
+    },
+    {
+      "file": "main.tpl",
+      "line": 2,
+      "column": 54
+    },
+    {
+      "file": "main.tpl",
+      "line": 3,
+      "column": 24
+    },
+    {
+      "file": "main.tpl",
+      "line": 3,
+      "column": 43
+    },
+    {
+      "file": "posts.tpl",
+      "line": 4,
+      "column": 17
+    },
+    {
+      "file": "main.tpl",
+      "line": 4,
+      "column": 33
+    },
+    {
+      "file": "posts.tpl",
+      "line": 8,
+      "column": 20
+    },
+    {
+      "file": "posts.tpl",
+      "line": 9,
+      "column": 20
+    },
+    {
+      "file": "posts.tpl",
+      "line": 9,
+      "column": 38
+    },
+    {
+      "file": "_post.tpl",
+      "line": 0,
+      "column": 0
+    },
+    {
+      "file": "posts.tpl",
+      "line": 13,
+      "column": 5
+    },
+    {
+      "file": "_post.tpl",
+      "line": 0,
+      "column": 4
+    },
+    {
+      "file": "_post.tpl",
+      "line": 0,
+      "column": 20
+    },
+    {
+      "file": "_post.tpl",
+      "line": 1,
+      "column": 6
+    },
+    {
+      "file": "_post.tpl",
+      "line": 1,
+      "column": 22
+    },
+    {
+      "file": "main.tpl",
+      "line": 7,
+      "column": 51
+    },
+    {
+      "file": "posts.tpl",
+      "line": 15,
+      "column": 15
+    }
+  ],
+  "html": "<html>\n<head>\n  <title>Posts</title>\n  <link rel=\"map\" src=\"maps/map.html.json\"></link>\n  \n  <script src=\"/posts.js\"></script>\n\n</head>\n<body>\n  \n  <p>Last updated: Tue Oct 01 2019</p>\n\n  <h1>Posts<h1>\n  <h2>Clickbait title</h2>\n<div>filler filler ad ad filler filler filler ad</div>\n<h2>Which character from Pride and Prejudice are you?</h2>\n<div>answer: none of them</div>\n<h2>A really really really really really really really really really really really really really really really really really really really really long title just to stress the word wrapping feature of the visualization</h2>\n<div>lol</div>\n\n</body>\n</html>\n\n"
+}

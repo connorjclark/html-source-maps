@@ -8,11 +8,13 @@
 const fs = require('fs').promises;
 const {FrameMap} = require('./html-maps.js');
 
+const DEBUG = Boolean(process.env.DEBUG);
+
 /**
  * @param {...any} args
  */
 function debug(...args) {
-  if (process.env.DEBUG) console.log(...args);
+  if (DEBUG) console.log(...args);
 }
 
 /**
@@ -23,6 +25,12 @@ function getValue(context, path) {
   let cur = context;
   for (const pathComponent of path) {
     cur = cur[pathComponent];
+  }
+  if (typeof cur === 'undefined') {
+    const errorMessage = `Could not find: ${path}`;
+    if (DEBUG) throw new Error(errorMessage);
+    console.error(errorMessage);
+    return '';
   }
   return cur;
 }
@@ -74,8 +82,14 @@ class TemplateEngine {
     debug(JSON.stringify(template, null, 2));
 
     const frameMap = new FrameMap();
+    // Very simplified. Real solution would need to randomize the name, and know how
+    // to save the file in some part of the filesystem, that's served via HTTP over a specific
+    // web root path.
+    const mapUrl = 'maps/map.html.json';
     /** @type {HtmlMaps.HtmlMapJson} */
     const map = {
+      url: '/', // TODO
+      mapUrl,
       ranges: [],
       frames: frameMap.frames(),
     };
@@ -112,6 +126,8 @@ class TemplateEngine {
       }
     }
 
+    viewContext.html_map_url = map.mapUrl;
+
     // Rendering can't be done immediately, since blocks can be appended
     // to from any point in the template tree. So the first step is creating
     // a minimal 'segment' tree, which can be rendered without special logic
@@ -127,6 +143,11 @@ class TemplateEngine {
 
     debug('====== map ======');
     debug(JSON.stringify(map, null, 2));
+
+    // Tack on the optional HTML property.
+    map.html = text;
+
+    await fs.writeFile(mapUrl, JSON.stringify(map, null, 2));
 
     return {
       text,

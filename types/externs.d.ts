@@ -61,8 +61,11 @@ declare global {
 
     // HTML Source Map
     interface HtmlMapJson {
+      url?: string;
+      mapUrl?: string;
       ranges: Range[];
       frames: Frame[];
+      html?: string;
     }
 
     interface Range {
