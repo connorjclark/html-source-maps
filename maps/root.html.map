@@ -52,8 +52,8 @@
       "startColumn": 46,
       "endLine": 4,
       "endColumn": 3,
-      "length": 12,
-      "text": "\"></link>\n  "
+      "length": 5,
+      "text": "\">\n  "
     },
     {
       "callStack": [
@@ -131,7 +131,7 @@
       "column": 51
     }
   ],
-  "html": "<html>\n<head>\n  <title>Default Title</title>\n  <link rel=\"htmlmap\" src=\"maps/root.html.map\"></link>\n  \n</head>\n<body>\n  Default Content\n</body>\n</html>\n",
+  "html": "<html>\n<head>\n  <title>Default Title</title>\n  <link rel=\"htmlmap\" src=\"maps/root.html.map\">\n  \n</head>\n<body>\n  Default Content\n</body>\n</html>\n",
   "url": "/",
   "mapUrl": "maps/root.html.map"
 }
