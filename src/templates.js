@@ -73,7 +73,7 @@ class TemplateEngine {
 
   /**
    * @param {string} templateName
-   * @param {*} viewContext
+   * @param {*=} viewContext
    */
   async render(templateName, viewContext) {
     if (!viewContext) viewContext = {};
@@ -127,6 +127,8 @@ class TemplateEngine {
       }
     }
 
+    // what???
+    // eslint-disable-next-line require-atomic-updates
     viewContext.html_map_url = map.mapUrl;
 
     // Rendering can't be done immediately, since blocks can be appended

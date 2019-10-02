@@ -2,31 +2,17 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const parseURL = require('url').parse;
-const TemplateEngine = require('./templates.js');
+const app = require('./app.js');
 
 const rootDirPath = path.join(__dirname, '..');
 
-const templateEngine = new TemplateEngine({templateFolder: 'views'});
-
 async function requestHandler(request, response) {
   const requestUrl = parseURL(request.url);
+  if (!requestUrl.pathname) throw new Error('missing pathname');
 
-  if (requestUrl.pathname === '/') {
-    const {text} = await templateEngine.render('main.tpl');
-    sendResponse(200, text);
-    return;
-  }
-
-  if (requestUrl.pathname === '/posts') {
-    const {text} = await templateEngine.render('posts.tpl', {
-      lastUpdated: new Date().toDateString(),
-      posts: [
-        {name: 'Clickbait title', body: 'filler filler ad ad filler filler filler ad'},
-        {name: 'Which character from Pride and Prejudice are you?', body: 'answer: none of them'},
-        {name: `A ${'really '.repeat(20)}long title just to stress the word wrapping feature of the visualization`, body: 'lol'},
-      ],
-    });
-    sendResponse(200, text);
+  const appResult = await app.maybeRender(requestUrl.pathname);
+  if (appResult) {
+    sendResponse(200, appResult.text);
     return;
   }
 
