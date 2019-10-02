@@ -76,6 +76,7 @@ class TemplateEngine {
    * @param {*} viewContext
    */
   async render(templateName, viewContext) {
+    if (!viewContext) viewContext = {};
     const template = await this._getTemplate(templateName);
 
     debug('====== template ======');
