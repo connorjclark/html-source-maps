@@ -1,0 +1,137 @@
+{
+  "ranges": [
+    {
+      "callStack": [
+        0
+      ],
+      "startLine": 0,
+      "startColumn": 0,
+      "endLine": 2,
+      "endColumn": 10,
+      "length": 23,
+      "text": "<html>\n<head>\n  <title>"
+    },
+    {
+      "callStack": [
+        1
+      ],
+      "startLine": 2,
+      "startColumn": 10,
+      "endLine": 2,
+      "endColumn": 23,
+      "length": 13,
+      "text": "Default Title"
+    },
+    {
+      "callStack": [
+        2
+      ],
+      "startLine": 2,
+      "startColumn": 23,
+      "endLine": 3,
+      "endColumn": 24,
+      "length": 32,
+      "text": "</title>\n  <link rel=\"map\" src=\""
+    },
+    {
+      "callStack": [
+        3
+      ],
+      "startLine": 3,
+      "startColumn": 24,
+      "endLine": 3,
+      "endColumn": 42,
+      "length": 18,
+      "text": "maps/root.html.map"
+    },
+    {
+      "callStack": [
+        4
+      ],
+      "startLine": 3,
+      "startColumn": 42,
+      "endLine": 4,
+      "endColumn": 3,
+      "length": 12,
+      "text": "\"></link>\n  "
+    },
+    {
+      "callStack": [
+        5
+      ],
+      "startLine": 4,
+      "startColumn": 3,
+      "endLine": 7,
+      "endColumn": 3,
+      "length": 18,
+      "text": "\n</head>\n<body>\n  "
+    },
+    {
+      "callStack": [
+        6
+      ],
+      "startLine": 7,
+      "startColumn": 3,
+      "endLine": 7,
+      "endColumn": 18,
+      "length": 15,
+      "text": "Default Content"
+    },
+    {
+      "callStack": [
+        7
+      ],
+      "startLine": 7,
+      "startColumn": 18,
+      "endLine": 10,
+      "endColumn": 1,
+      "length": 17,
+      "text": "\n</body>\n</html>\n"
+    }
+  ],
+  "frames": [
+    {
+      "file": "main.tpl",
+      "line": 0,
+      "column": 0
+    },
+    {
+      "file": "main.tpl",
+      "line": 2,
+      "column": 27
+    },
+    {
+      "file": "main.tpl",
+      "line": 2,
+      "column": 54
+    },
+    {
+      "file": "main.tpl",
+      "line": 3,
+      "column": 24
+    },
+    {
+      "file": "main.tpl",
+      "line": 3,
+      "column": 43
+    },
+    {
+      "file": "main.tpl",
+      "line": 4,
+      "column": 33
+    },
+    {
+      "file": "main.tpl",
+      "line": 7,
+      "column": 22
+    },
+    {
+      "file": "main.tpl",
+      "line": 7,
+      "column": 51
+    }
+  ],
+  "html": "<html>\n<head>\n  <title>Default Title</title>\n  <link rel=\"map\" src=\"maps/root.html.map\"></link>\n  \n</head>\n<body>\n  Default Content\n</body>\n</html>\n",
+  "url": "/",
+  "mapUrl": "maps/root.html.map"
+}

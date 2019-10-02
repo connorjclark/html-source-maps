@@ -29,7 +29,7 @@ async function maybeRender(path) {
   // Very simplified. Real solution would need to randomize the name, and know how
   // to save the file in some part of the filesystem, that's served via HTTP over a specific
   // web root path.
-  const mapUrl = 'maps/map.html.json';
+  const mapUrl = `maps/${path.replace(/[^a-zA-Z0-9]/g, '') || 'root'}.html.map`;
 
   templateEngine.setRootContext({
     html_map_url: mapUrl,
